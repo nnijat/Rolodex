@@ -1,3 +1,16 @@
+## Project Instructions
+1. Partner up. This is a pair programming project.
+2. Start with this api: https://randomuser.me/api?results=25
+3. Whiteboard an app you can use to display users that you would use if you didn't have your phone.
+4. Make a code Plan and plan your components
+#### Check list
+- [x] minimum 25 users
+- [ ] displays the user's name and thumbnail picture
+- [ ] When "show details" button is clicked the user's details are revealed and button text turns to "hide details"
+- [ ] When "hide details" is clicked the user's details disappear.
+
+
+## About React
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
