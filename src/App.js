@@ -1,77 +1,111 @@
 import React, { Component } from 'react';
 import './App.css';
 
+function UserCard(props) {
+
+  const cStyle = {
+    listStyleType: "none"
+  }
+
+  let emailInfo = (
+    <li style={cStyle}>{"Emial: " + props.user.email}</li>
+  );
+  let gender = (
+    <li style={cStyle}>{"Gender: " + props.user.gender}</li>
+  );
+  let age = (
+    <li style={cStyle}>{"Age: " + props.user.dob.age + " years old"}</li>
+  );
+  let phone = (
+    <li style={cStyle}>{props.user.phone}</li>
+  );
+  let location = (
+    <li style={cStyle}>{"From: " + props.user.location.street + ", " + props.user.location.city}</li>
+  );
+
+  let buttonText
+  if (props.isHidden) {
+    buttonText = "Show Details";
+  } else {
+    buttonText = "Hide Details";
+  }
+
+  return (
+    <div style={{ marginBottom: '40px' }}>
+      <img src={props.user.picture.large} alt="smile-face"></img>
+      <div>
+        <span>{props.user.name.first}</span>
+        {' '}
+        <span>{props.user.name.last}</span>
+      </div>
+      <ul>
+        {props.isHidden[props.index] === true ? null : emailInfo}
+        {props.isHidden[props.index] === true ? null : gender}
+        {props.isHidden[props.index] === true ? null : age}
+        {props.isHidden[props.index] === true ? null : phone}
+        {props.isHidden[props.index] === true ? null : location}
+      </ul>
+      <button onClick={() => props.handleClick(props.index)}>{buttonText}</button>
+    </div>
+  );
+}
+
 class App extends Component {
 
-  constructor() {
-    super()
+  state = {
+    results: [],
+    isHidden: [],
+  };
 
-    this.state = {
-      peopleList: [],
-      itemsToShow: 2,
-      expanded: false
-    }
-
-    this.showMore = this.showMore.bind(this);
-  }
-
-  showMore() {
-    this.state.itemsToShow === 2 ? (
-      this.setState({ itemsToShow: this.state.peopleList.length, expanded: true })
-    ) : (
-        this.setState({ itemsToShow: 2, expanded: false })
-      )
-  }
 
   componentDidMount() {
-    this.fetchData();
+    const arr = []
+    fetch('https://randomuser.me/api?results=25')
+      .then(response => response.json())
+      .then(json => {
+        json.results.map(() => {
+          arr.push(true)
+        })
+        this.setState({
+          results: json.results,
+          isHidden: arr,
+        })
+      })
   }
 
-  fetchData() {
-    fetch('https://randomuser.me/api/?results=25')
-      .then(response => response.json())
-      .then(data => data.results.map(user =>
-        (
-          {
-            name: `${user.name.first} ${user.name.last}`,
-            image: `${user.picture.thumbnail}`,
-            age: `${user.dob.age}`,
-            email: `${user.email}`,
-          })
-      ))
-      .then(peopleList => this.setState({
-        peopleList
-      }))
-      .catch(error => console.log("There as an error", error))
+  handleClick = (index) => {
+    const newArr = this.state.isHidden.map((item, newIndex) => {
+      if (newIndex === index) {
+        if (item === true) {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return item;
+      }
+    })
+
+    this.setState({
+      isHidden: newArr,
+    })
   }
+
 
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <div>
-            <h1>People List</h1>
-            <ul>
-              {this.state.peopleList.slice(0, this.state.itemsToShow).map((person, i) =>
-                <li key={i}>{person.name}
-                  <img src={person.image} alt={person.name} />
-                  <button className="btn btn-primary" onClick={this.showMore}>
-                    {this.state.expanded ? (
-                      <span>Hide Details</span>
-                    ) : (
-                        <span>Show Details</span>
-                      )
-                    }
-                  </button>
-                </li>
-              )}
-            </ul>
-          </div>
-        </header>
+        {this.state.results.map((user, index) =>
+          <UserCard
+            key={index}
+            index={index}
+            user={user}
+            handleClick={this.handleClick}
+            isHidden={this.state.isHidden} />
+        )}
       </div>
     );
   }
 }
-
 
 export default App;
